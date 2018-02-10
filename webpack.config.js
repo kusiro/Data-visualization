@@ -55,11 +55,6 @@ module.exports = {
                             },
                             svgo: {
                                 quality: 10,
-                            },{
-                                gifsicle: {
-                                    interlaced: false,
-                                    quality: 10,
-                                }
                             }
                         }
                     }
