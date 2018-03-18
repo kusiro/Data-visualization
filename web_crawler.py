@@ -5,11 +5,11 @@ import os
 import re
 import urllib.request
 import json
-
-def get_data(link):
-    weatherdata = {}
+weatherdata = {}
+def get_data(link,datadic,time):
+    datadic[time] = {}
     for i in range(13):
-        weatherdata[i] = {}
+        datadic[time][i] = []
     r = requests.get(url = link)
     r.encoding = 'utf8'
     soup = BeautifulSoup(r.text,"html.parser")
@@ -19,20 +19,26 @@ def get_data(link):
         for d in data[i]:
             if (not d.string == "\n"):
                 if (d.string == "-"):
-                    weatherdata[counter][i-2] = 0
+                    datadic[time][counter].append(0)
                     counter += 1
                     continue
                 if (d.string == "T"):
-                    weatherdata[counter][i-2] = "< 0.1"
+                    datadic[time][counter].append(0.1)
                     counter += 1
                     continue
-                weatherdata[counter][i-2] = d.string
+                if (d.string == None):
+                    counter +=1
+                    continue
+                datadic[time][counter].append(float(d.string))
                 counter += 1
-    return weatherdata
+    return datadic
 
-link = "https://www.cwb.gov.tw/V7/climate/dailyPrecipitation/Data/466920_2017.htm"
-weatherdata = get_data(link)
-with open('weatherdata.json', 'w', encoding='utf-8') as f:
+
+num = [2009,2010,2011,2012,2013,2014,2015,2016,2017]
+for i in num:
+    link = "https://www.cwb.gov.tw/V7/climate/dailyPrecipitation/Data/466920_"+str(i)+".htm"
+    get_data(link,weatherdata,i)
+with open("weatherdata.json", 'w', encoding='utf-8') as f:
     json.dump(weatherdata, f, indent=2, sort_keys=True, ensure_ascii=False)
 
 
